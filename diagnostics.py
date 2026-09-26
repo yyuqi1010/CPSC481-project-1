@@ -46,7 +46,14 @@ def _convert_xray(value):
 def _convert_dyspnea(value):
     """Convert dyspnea ("Present"/"Absent"/"NA") to True/False/None."""
     # TODO (Person 3): implement the conversion.
-    raise NotImplementedError
+    if value == "NA":
+        return None
+    elif value == "Present":
+        return True
+    elif value == "Absent":
+        return False
+    else:
+        raise ValueError("dyspnea value must be 'Present', 'Absent', or 'NA'")
 
 
 class Diagnostics:
@@ -70,7 +77,7 @@ class Diagnostics:
             ('Cancer', 'Smoking', {T: 0.5, F: 0.5}),
 
             # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
-            ('Bronchitis', 'Smoking', {T: 0.5, F: 0.5}),
+            ('Bronchitis', 'Smoking', {T: 0.6, F: 0.3}),
 
             # OWNER: Person 1 (TB)  # TODO: fill from diagram
             ('TBorC', ['TB', 'Cancer'], {
@@ -82,7 +89,7 @@ class Diagnostics:
 
             # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Dyspnea', ['TBorC', 'Bronchitis'], {
-                (T, T): 0.5, (T, F): 0.5, (F, T): 0.5, (F, F): 0.5,
+                (T, T): 0.9, (T, F): 0.7, (F, T): 0.8, (F, F): 0.1,
             }),
         ])
 
