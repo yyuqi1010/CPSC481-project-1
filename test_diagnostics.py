@@ -43,13 +43,35 @@ class TestPerson1TB(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestPerson2Cancer(unittest.TestCase):
 
-    @unittest.skip("TODO: Person 2")
-    def test_smoking_and_abnormal_xray_favors_cancer(self):
-        # Suggestion: visit_to_asia="No", smoking="Yes", xray_result="Abnormal",
-        # dyspnea="NA" should make Cancer the most likely disease.
+    def test_smoking_input_conversion(self):
+        from diagnostics import _convert_smoking
+
+        self.assertIs(_convert_smoking("Yes"), True)
+        self.assertIs(_convert_smoking("No"), False)
+        self.assertIsNone(_convert_smoking("NA"))
+        with self.assertRaises(ValueError):
+            _convert_smoking("Sometimes")
+
+    def test_xray_input_conversion(self):
+        from diagnostics import _convert_xray
+
+        self.assertIs(_convert_xray("Abnormal"), True)
+        self.assertIs(_convert_xray("Normal"), False)
+        self.assertIsNone(_convert_xray("NA"))
+        with self.assertRaises(ValueError):
+            _convert_xray("Blurry")
+
+    def test_cancer_nodes_match_network_diagram(self):
         d = Diagnostics()
-        disease, probability = d.diagnose("No", "Yes", "Abnormal", "NA")
-        self.assertEqual(disease, "Cancer")
+        smoking = d.net.variable_node("Smoking")
+        cancer = d.net.variable_node("Cancer")
+        xray = d.net.variable_node("Xray")
+
+        self.assertEqual(smoking.p(True, {}), 0.5)
+        self.assertEqual(cancer.p(True, {"Smoking": True}), 0.1)
+        self.assertEqual(cancer.p(True, {"Smoking": False}), 0.01)
+        self.assertEqual(xray.p(True, {"TBorC": True}), 0.99)
+        self.assertEqual(xray.p(True, {"TBorC": False}), 0.05)
 
 
 # ---------------------------------------------------------------------------

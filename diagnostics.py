@@ -30,14 +30,22 @@ def _convert_asia(value):
 # ---------------------------------------------------------------------------
 def _convert_smoking(value):
     """Convert smoking ("Yes"/"No"/"NA") to True/False/None."""
-    # TODO (Person 2): implement the conversion.
-    raise NotImplementedError
+    values = {"Yes": T, "No": F, "NA": None}
+    try:
+        return values[value]
+    except KeyError as error:
+        raise ValueError("smoking must be 'Yes', 'No', or 'NA'") from error
 
 
 def _convert_xray(value):
     """Convert xray_result ("Abnormal"/"Normal"/"NA") to True/False/None."""
-    # TODO (Person 2): implement the conversion.
-    raise NotImplementedError
+    values = {"Abnormal": T, "Normal": F, "NA": None}
+    try:
+        return values[value]
+    except KeyError as error:
+        raise ValueError(
+            "xray_result must be 'Abnormal', 'Normal', or 'NA'"
+        ) from error
 
 
 # ---------------------------------------------------------------------------
@@ -60,14 +68,14 @@ class Diagnostics:
             # OWNER: Person 1 (TB)  # TODO: fill from diagram
             ('Asia', '', 0.5),
 
-            # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
+            # OWNER: Person 2 (Cancer)
             ('Smoking', '', 0.5),
 
             # OWNER: Person 1 (TB)  # TODO: fill from diagram
             ('TB', 'Asia', {T: 0.5, F: 0.5}),
 
-            # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
-            ('Cancer', 'Smoking', {T: 0.5, F: 0.5}),
+            # OWNER: Person 2 (Cancer)
+            ('Cancer', 'Smoking', {T: 0.1, F: 0.01}),
 
             # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Bronchitis', 'Smoking', {T: 0.5, F: 0.5}),
@@ -77,8 +85,8 @@ class Diagnostics:
                 (T, T): 0.5, (T, F): 0.5, (F, T): 0.5, (F, F): 0.5,
             }),
 
-            # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
-            ('Xray', 'TBorC', {T: 0.5, F: 0.5}),
+            # OWNER: Person 2 (Cancer)
+            ('Xray', 'TBorC', {T: 0.99, F: 0.05}),
 
             # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Dyspnea', ['TBorC', 'Bronchitis'], {
