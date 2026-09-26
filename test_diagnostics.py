@@ -1,6 +1,7 @@
 import unittest
 
-from diagnostics import Diagnostics
+from aima.probability import F, T
+from diagnostics import Diagnostics, _convert_asia
 
 
 class TestNetworkBuilds(unittest.TestCase):
@@ -29,13 +30,26 @@ class TestKnownCase(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestPerson1TB(unittest.TestCase):
 
-    @unittest.skip("TODO: Person 1")
-    def test_visit_to_asia_favors_tb(self):
-        # Suggestion: visit_to_asia="Yes", smoking="No", xray_result="Abnormal",
-        # dyspnea="NA" should make TB the most likely disease.
+    def test_asia_input_conversion(self):
+        self.assertIs(_convert_asia("Yes"), T)
+        self.assertIs(_convert_asia("No"), F)
+        self.assertIsNone(_convert_asia("NA"))
+        with self.assertRaises(ValueError):
+            _convert_asia("Sometimes")
+
+    def test_tb_nodes_match_network_diagram(self):
         d = Diagnostics()
-        disease, probability = d.diagnose("Yes", "No", "Abnormal", "NA")
-        self.assertEqual(disease, "TB")
+        asia = d.net.variable_node("Asia")
+        tb = d.net.variable_node("TB")
+        tb_or_cancer = d.net.variable_node("TBorC")
+
+        self.assertEqual(asia.p(T, {}), 0.01)
+        self.assertEqual(tb.p(T, {"Asia": T}), 0.05)
+        self.assertEqual(tb.p(T, {"Asia": F}), 0.01)
+        self.assertEqual(tb_or_cancer.p(T, {"TB": T, "Cancer": T}), 1.0)
+        self.assertEqual(tb_or_cancer.p(T, {"TB": T, "Cancer": F}), 1.0)
+        self.assertEqual(tb_or_cancer.p(T, {"TB": F, "Cancer": T}), 1.0)
+        self.assertEqual(tb_or_cancer.p(T, {"TB": F, "Cancer": F}), 0.0)
 
 
 # ---------------------------------------------------------------------------

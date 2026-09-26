@@ -21,8 +21,13 @@ def _convert_asia(value):
     Returns True, False, or None (None means the value was "NA", i.e.
     unknown, and must be left out of the evidence dict).
     """
-    # TODO (Person 1): implement the conversion.
-    raise NotImplementedError
+    values = {"Yes": T, "No": F, "NA": None}
+    try:
+        return values[value]
+    except KeyError as error:
+        raise ValueError(
+            "visit_to_asia must be 'Yes', 'No', or 'NA'"
+        ) from error
 
 
 # ---------------------------------------------------------------------------
@@ -57,14 +62,14 @@ class Diagnostics:
         # Every CPT below is a 0.5 placeholder - replace with the real
         # numbers from the diagram, keeping the same dict shape.
         self.net = BayesNet([
-            # OWNER: Person 1 (TB)  # TODO: fill from diagram
-            ('Asia', '', 0.5),
+            # OWNER: Person 1 (TB)
+            ('Asia', '', 0.01),
 
             # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
             ('Smoking', '', 0.5),
 
-            # OWNER: Person 1 (TB)  # TODO: fill from diagram
-            ('TB', 'Asia', {T: 0.5, F: 0.5}),
+            # OWNER: Person 1 (TB)
+            ('TB', 'Asia', {T: 0.05, F: 0.01}),
 
             # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
             ('Cancer', 'Smoking', {T: 0.5, F: 0.5}),
@@ -72,9 +77,9 @@ class Diagnostics:
             # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Bronchitis', 'Smoking', {T: 0.5, F: 0.5}),
 
-            # OWNER: Person 1 (TB)  # TODO: fill from diagram
+            # OWNER: Person 1 (TB)
             ('TBorC', ['TB', 'Cancer'], {
-                (T, T): 0.5, (T, F): 0.5, (F, T): 0.5, (F, F): 0.5,
+                (T, T): 1.0, (T, F): 1.0, (F, T): 1.0, (F, F): 0.0,
             }),
 
             # OWNER: Person 2 (Cancer)  # TODO: fill from diagram
