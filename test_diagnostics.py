@@ -93,10 +93,7 @@ class TestPerson2Cancer(unittest.TestCase):
 # ---------------------------------------------------------------------------
 class TestPerson3Bronchitis(unittest.TestCase):
 
-    @unittest.skip("TODO: Person 3")
     def test_smoking_and_dyspnea_favors_bronchitis(self):
-        # Suggestion: visit_to_asia="No", smoking="Yes", xray_result="Normal",
-        # dyspnea="Present" should make Bronchitis the most likely disease.
         d = Diagnostics()
         disease, probability = d.diagnose("No", "Yes", "Normal", "Present")
         self.assertEqual(disease, "Bronchitis")

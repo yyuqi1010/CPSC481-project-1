@@ -2,19 +2,11 @@
 Diagnostics: Bayesian network that diagnoses TB, Cancer, or Bronchitis
 from (possibly partial) symptom evidence, using AIMA's BayesNet and
 enumeration_ask.
-
-GROUP RULE: do not rename any node/variable name below, and do not
-reorder the node list in __init__ (BayesNet.add() requires each node's
-parents to already be in the network). Only edit the lines marked with
-your name.
 """
 
 from aima.probability import BayesNet, enumeration_ask, T, F
 
 
-# ---------------------------------------------------------------------------
-# Person 1 (TB): converts visit_to_asia
-# ---------------------------------------------------------------------------
 def _convert_asia(value):
     """Convert visit_to_asia ("Yes"/"No"/"NA") to True/False/None.
 
@@ -30,9 +22,6 @@ def _convert_asia(value):
         ) from error
 
 
-# ---------------------------------------------------------------------------
-# Person 2 (Cancer): converts smoking and xray_result
-# ---------------------------------------------------------------------------
 def _convert_smoking(value):
     """Convert smoking ("Yes"/"No"/"NA") to True/False/None."""
     values = {"Yes": T, "No": F, "NA": None}
@@ -53,12 +42,8 @@ def _convert_xray(value):
         ) from error
 
 
-# ---------------------------------------------------------------------------
-# Person 3 (Bronchitis): converts dyspnea
-# ---------------------------------------------------------------------------
 def _convert_dyspnea(value):
     """Convert dyspnea ("Present"/"Absent"/"NA") to True/False/None."""
-    # TODO (Person 3): implement the conversion.
     if value == "NA":
         return None
     elif value == "Present":
@@ -76,30 +61,15 @@ class Diagnostics:
         # Node list is parent-before-child (required by BayesNet.add).
         # Each CPT value is P(node=True | parents), from the lecture diagram.
         self.net = BayesNet([
-            # OWNER: Person 1 (TB)
             ('Asia', '', 0.01),
-
-            # OWNER: Person 2 (Cancer)
             ('Smoking', '', 0.5),
-
-            # OWNER: Person 1 (TB)
             ('TB', 'Asia', {T: 0.05, F: 0.01}),
-
-            # OWNER: Person 2 (Cancer)
             ('Cancer', 'Smoking', {T: 0.1, F: 0.01}),
-
-            # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Bronchitis', 'Smoking', {T: 0.6, F: 0.3}),
-
-            # OWNER: Person 1 (TB)
             ('TBorC', ['TB', 'Cancer'], {
                 (T, T): 1.0, (T, F): 1.0, (F, T): 1.0, (F, F): 0.0,
             }),
-
-            # OWNER: Person 2 (Cancer)
             ('Xray', 'TBorC', {T: 0.99, F: 0.05}),
-
-            # OWNER: Person 3 (Bronchitis)  # TODO: fill from diagram
             ('Dyspnea', ['TBorC', 'Bronchitis'], {
                 (T, T): 0.9, (T, F): 0.7, (F, T): 0.8, (F, F): 0.1,
             }),
