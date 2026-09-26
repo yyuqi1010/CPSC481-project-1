@@ -74,8 +74,7 @@ class Diagnostics:
 
     def __init__(self):
         # Node list is parent-before-child (required by BayesNet.add).
-        # Every CPT below is a 0.5 placeholder - replace with the real
-        # numbers from the diagram, keeping the same dict shape.
+        # Each CPT value is P(node=True | parents), from the lecture diagram.
         self.net = BayesNet([
             # OWNER: Person 1 (TB)
             ('Asia', '', 0.01),
@@ -110,20 +109,20 @@ class Diagnostics:
         """Return [most_likely_disease, probability].
 
         most_likely_disease is exactly "TB", "Cancer", or "Bronchitis".
-        Any argument equal to "NA" is unknown and must be left out of
-        the evidence passed to enumeration_ask.
-
-        Shared final step - whoever picks this up should coordinate
-        with the group rather than editing alone.
+        Any argument equal to "NA" is unknown and left out of the evidence.
         """
-        # TODO (all): convert each input with the helpers above
-        #   (_convert_asia, _convert_smoking, _convert_xray, _convert_dyspnea).
-        # TODO (all): build an evidence dict keyed by node name
-        #   (e.g. {'Asia': True, 'Xray': False}), skipping any conversion
-        #   that came back None (NA).
-        # TODO (all): call enumeration_ask('TB', evidence, self.net), and
-        #   likewise for 'Cancer' and 'Bronchitis'. Each call returns a
-        #   ProbDist; the probability the disease is present is dist[T].
-        # TODO (all): return [name, probability] for whichever of the
-        #   three has the highest probability.
-        raise NotImplementedError
+        observed = {
+            'Asia': _convert_asia(visit_to_asia),
+            'Smoking': _convert_smoking(smoking),
+            'Xray': _convert_xray(xray_result),
+            'Dyspnea': _convert_dyspnea(dyspnea),
+        }
+        evidence = {node: value for node, value in observed.items()
+                    if value is not None}
+
+        probabilities = {
+            disease: enumeration_ask(disease, evidence, self.net)[T]
+            for disease in ('TB', 'Cancer', 'Bronchitis')
+        }
+        most_likely = max(probabilities, key=probabilities.get)
+        return [most_likely, probabilities[most_likely]]
